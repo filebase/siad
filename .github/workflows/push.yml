@@ -1,0 +1,23 @@
+name: CI Pipeline
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v1
+
+      - name: Docker build
+        run: docker build -t ghcr.io/filebase/siad:$GITHUB_SHA .
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker push
+        run: docker push ghcr.io/filebase/siad:$GITHUB_SHA
